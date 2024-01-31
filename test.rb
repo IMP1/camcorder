@@ -1,3 +1,15 @@
+# TODO:
+#
+#   - [ ] Read through [this project](https://github.com/wvanbergen/chunky_png/blob/master/lib/chunky_png/canvas.rb)
+#   - [ ] Give this a readme
+#   - [ ] Work on some shape rendering
+#   - [ ] Work on some alpha blending
+#   - [ ] Image loading
+#   - [ ] Font handling? Or just use bitmap fonts?
+#   - [ ] Have a look at other projects involving CPU rendering, which it feels like this is
+#
+
+
 require_relative 'src/camcorder'
 
 class MyVideo < VideoGenerator
