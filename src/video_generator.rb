@@ -2,7 +2,7 @@ require "ostruct"
 
 class VideoGenerator
 
-    FFPMEG_PATH = "C:/Users/Huw/bin/ffmpeg-6.1.1-full_build/bin/ffmpeg.exe"
+    FFPMEG_PATH = "ffmpeg"
 
     def initialize(width, height, duration, fps)
         @width = width.to_i
