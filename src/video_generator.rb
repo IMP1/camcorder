@@ -2,7 +2,11 @@ require "ostruct"
 
 class VideoGenerator
 
-    FFPMEG_PATH = "ffmpeg"
+    @@ffmpeg_path = "ffmpeg"
+
+    def self.set_ffmpeg_path(path)
+        @@ffmpeg_path = path
+    end
 
     def initialize(width, height, duration, fps)
         @width = width.to_i
@@ -31,7 +35,7 @@ class VideoGenerator
     end
 
     def save(output_filepath)
-        command_string = [FFPMEG_PATH, # path to ffpmeg
+        command_string = [@@ffmpeg_path, # path to ffpmeg
             '-y', '-r', "#{@fps}", # fps
             '-s', "#{@width}x#{@height}", # size
             '-pix_fmt', 'argb', # format
