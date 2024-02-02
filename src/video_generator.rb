@@ -4,6 +4,12 @@ class VideoGenerator
 
     @@ffmpeg_path = "ffmpeg"
 
+    attr_reader :width
+    attr_reader :height
+    attr_reader :duration
+    attr_reader :fps
+    attr_reader :state
+
     def self.set_ffmpeg_path(path)
         @@ffmpeg_path = path
     end
@@ -24,9 +30,9 @@ class VideoGenerator
     end
 
     def generate_frames
-        seconds_per_frame = 1.0 / @fps
-        total_frames = (@fps * @duration).ceil.to_i + 1
-        frame = Frame.new(@width, @height)
+        seconds_per_frame = 1.0 / fps
+        total_frames = (fps * duration).ceil.to_i + 1
+        frame = Frame.new(width, height)
         setup(frame)
         total_frames.times do |frame_index|
             frame = frame_at(frame_index.to_f * seconds_per_frame, frame)
@@ -36,8 +42,8 @@ class VideoGenerator
 
     def save(output_filepath)
         command_string = [@@ffmpeg_path, # path to ffpmeg
-            '-y', '-r', "#{@fps}", # fps
-            '-s', "#{@width}x#{@height}", # size
+            '-y', '-r', "#{fps}", # fps
+            '-s', "#{width}x#{height}", # size
             '-pix_fmt', 'argb', # format
             '-f', 'rawvideo',  '-i', '-', # tell ffmpeg to expect raw video from the pipe
             '-vcodec', 'mpeg4', output_filepath # output encoding
