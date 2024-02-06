@@ -17,12 +17,6 @@ class Colour
             ((colour.g * 255).to_i << 16) + 
             ((colour.b * 255).to_i << 8) +
             ((colour.a * 255).to_i << 0)
-        # Not sure whether to multiple 256 which gives more intuitive results for eg 0.5 -> 80, 
-        # but then requires awkwardly clamping
-        # c = ((colour.a * 255).to_i << 24) + 
-        #     ((colour.r * 255).to_i << 16) + 
-        #     ((colour.g * 255).to_i << 8) +
-        #     ((colour.b * 255).to_i << 0)
         return c
     end
 
