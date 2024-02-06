@@ -32,7 +32,7 @@ class VideoGenerator
     def generate_frames
         seconds_per_frame = 1.0 / fps
         total_frames = (fps * duration).ceil.to_i + 1
-        frame = Frame.new(width, height)
+        frame = Frame.from_colour(width, height, Colour::BLACK)
         setup(frame)
         total_frames.times do |frame_index|
             frame = frame_at(frame_index.to_f * seconds_per_frame, frame)
@@ -42,6 +42,8 @@ class VideoGenerator
 
     def save(output_filepath)
         command_string = [@@ffmpeg_path, # path to ffpmeg
+            '-hide_banner',
+            # '-loglevel warning',
             '-y', '-r', "#{fps}", # fps
             '-s', "#{width}x#{height}", # size
             '-pix_fmt', 'argb', # format
