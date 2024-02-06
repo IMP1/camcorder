@@ -4,24 +4,52 @@ class Frame
     attr_reader :height
     attr_reader :data
 
-    def initialize(width, height, colour=Colour::BLACK)
+    def initialize(width, height, data=[])
         @width = width
         @height = height
-        c = Colour.to_rgba(colour)
-        @data = [c] * @height * @width # Array of 32 bit integers in RGBA format (8 bits per channel)
+        @data = data # Array of 32 bit integers in RGBA format (8 bits per channel)
     end
 
-    def self.load_from_file(filepath)
-        # TODO: Use a png library to load the data
-        image_width = 0
-        image_height = 0
-        image_data = []
-        frame = Frame.new(image_width, image_height)
-        frame.instance_variable_set(:data, image_data)
+    def self.from_colour(width, height, colour)
+        c = Colour.to_rgba(colour)
+        data = [c] * width * height
+        return Frame.from_data(width, height, data)
+    end
+
+    def self.from_data(width, height, data)
+        frame = Frame.new(width, height, data)
         return frame
     end
 
-    def to_string(format=:ARGB)
+    def self.from_file(filepath)
+        image_info = Magick.image_info(filepath)
+        if image_info.nil?
+            puts "Couldn't load image from '#{filepath}'."
+            # TODO: Error?
+            return nil
+        end
+        width = image_info["width"]
+        height = image_info["height"]
+        data_stream = Magick.load_from_file(filepath, width, height)
+        return Frame.from_string(width, height, data_stream)
+    end
+
+    def self.from_string(width, height, stream, format=:RGBA)
+        # TODO: Work out why the stream would ever not have a multiple of 4 chars/bytes! 
+        #       Is that a Magick thing? Is that a ruby string length thing?
+
+        data = []
+        case format
+        when :ARGB
+            data = stream.unpack('C*').each_slice(4).select{ |c| c.size == 4 }.map { |a, r, g, b| (r << 24) + (g << 16) + (b << 8) + (a << 0) }
+        when :RGBA
+            data = stream.unpack('C*').each_slice(4).select{ |c| c.size == 4 }.map { |r, g, b, a| (r << 24) + (g << 16) + (b << 8) + (a << 0) }
+        end
+        frame = Frame.new(width, height, data)
+        return frame
+    end
+
+    def to_string(format=:RGBA)
         case format
         when :RGBA
             return @data.map { |c| [c[24..31], c[16..23], c[8..15], c[0..7]].pack('C*') }.join("")
@@ -32,9 +60,7 @@ class Frame
     end
 
     def duplicate
-        copy = Frame.new(width, height)
-        copy.instance_variable_set(:data, data.clone)
-        return copy
+        return Frame.new(width, height, data.clone)
     end
 
     def []=(x, y, colour)
